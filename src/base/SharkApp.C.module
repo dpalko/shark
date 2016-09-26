@@ -1,0 +1,52 @@
+#include "SharkApp.h"
+#include "Moose.h"
+#include "AppFactory.h"
+#include "MooseSyntax.h"
+
+template<>
+InputParameters validParams<SharkApp>()
+{
+  InputParameters params = validParams<MooseApp>();
+
+  params.set<bool>("use_legacy_uo_initialization") = false;
+  params.set<bool>("use_legacy_uo_aux_computation") = false;
+  params.set<bool>("use_legacy_output_syntax") = false;
+
+  return params;
+}
+
+SharkApp::SharkApp(InputParameters parameters) :
+    MooseApp(parameters)
+{
+  Moose::registerObjects(_factory);
+  SharkApp::registerObjects(_factory);
+
+  Moose::associateSyntax(_syntax, _action_factory);
+  SharkApp::associateSyntax(_syntax, _action_factory);
+}
+
+SharkApp::~SharkApp()
+{
+}
+
+// External entry point for dynamic application loading
+extern "C" void SharkApp__registerApps() { SharkApp::registerApps(); }
+void
+SharkApp::registerApps()
+{
+  registerApp(SharkApp);
+}
+
+// External entry point for dynamic object registration
+extern "C" void SharkApp__registerObjects(Factory & factory) { SharkApp::registerObjects(factory); }
+void
+SharkApp::registerObjects(Factory & factory)
+{
+}
+
+// External entry point for dynamic syntax association
+extern "C" void SharkApp__associateSyntax(Syntax & syntax, ActionFactory & action_factory) { SharkApp::associateSyntax(syntax, action_factory); }
+void
+SharkApp::associateSyntax(Syntax & /*syntax*/, ActionFactory & /*action_factory*/)
+{
+}
